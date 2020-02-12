@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public interface UserManager {
 
-        /***************User Manipulation operations.*******************/
+    /***************User Manipulation operations.*******************/
 
     public User createUser(User user, Map<String, Boolean> requiredAttributes)
             throws CharonException, ConflictException, BadRequestException;
@@ -182,4 +182,9 @@ public interface UserManager {
 
         throw new NotImplementedException();
     }
+
+    public void setTenant(String tenantId);
+
+    public String  getTenant();
+
 }

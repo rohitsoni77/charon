@@ -81,7 +81,12 @@ public class UserResourceManager extends AbstractResourceManager {
 
             //obtain the schema corresponding to user
             // unless configured returns core-user schema or else returns extended user schema)
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
 
             //get the URIs of required attributes which must be given a value
             Map<String, Boolean> requiredAttributes = ResourceManagerUtil.getOnlyRequiredAttributesURIs(
@@ -136,7 +141,13 @@ public class UserResourceManager extends AbstractResourceManager {
 
             //obtain the schema corresponding to user
             // unless configured returns core-user schema or else returns extended user schema)
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
+            //SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
             //decode the SCIM User object, encoded in the submitted payload.
             User user = (User) decoder.decodeResource(scimObjectString, schema, new User());
             //validate the created user.
@@ -147,15 +158,16 @@ public class UserResourceManager extends AbstractResourceManager {
                             CopyUtil.deepCopy(schema), attributes, excludeAttributes);
             User createdUser;
 
-            if (userManager != null) {
+            //if (userManager != null) {
             /*handover the SCIM User object to the user usermanager provided by the SP.
             need to send back the newly created user in the response payload*/
-                createdUser = userManager.createUser(user, requiredAttributes);
-            } else {
+            createdUser = userManager.createUser(user, requiredAttributes);
+            /*} else {
                 String error = "Provided user manager handler is null.";
                 //throw internal server error.
                 throw new InternalErrorException(error);
             }
+            */
             //encode the newly created SCIM user object and add id attribute to Location header.
             String encodedUser;
             Map<String, String> responseHeaders = new HashMap<String, String>();
@@ -263,7 +275,13 @@ public class UserResourceManager extends AbstractResourceManager {
             sortOrder = resolveSortOrder(sortOrder, sortBy);
 
             // Unless configured returns core-user schema or else returns extended user schema.
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            //SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
 
             // Build node for filtering.
             Node rootNode = buildNode(filter, schema);
@@ -277,19 +295,20 @@ public class UserResourceManager extends AbstractResourceManager {
                             excludeAttributes);
 
             // API user should pass a user manager to UserResourceEndpoint.
-            if (userManager != null) {
-                List<Object> tempList = userManager
-                        .listUsersWithGET(rootNode, startIndex, count, sortBy, sortOrder, domainName,
-                                requiredAttributes);
+            //if (userManager != null) {
+            List<Object> tempList = userManager
+                    .listUsersWithGET(rootNode, startIndex, count, sortBy, sortOrder, domainName,
+                            requiredAttributes);
 
-                return processUserList(tempList, encoder, schema, attributes, excludeAttributes, startIndex);
-            } else {
+            return processUserList(tempList, encoder, schema, attributes, excludeAttributes, startIndex);
+            /*} else {
                 String error = "Provided user manager handler is null.";
                 // Log the error as well.
                 // Throw internal server error.
                 throw new InternalErrorException(error);
             }
-        } catch (CharonException | NotFoundException | InternalErrorException | BadRequestException |
+             */
+        } catch (CharonException | NotFoundException | BadRequestException |
                 NotImplementedException e) {
             return AbstractResourceManager.encodeSCIMException(e);
         } catch (IOException e) {
@@ -328,7 +347,13 @@ public class UserResourceManager extends AbstractResourceManager {
             sortOrder = resolveSortOrder(sortOrder, sortBy);
 
             // Unless configured returns core-user schema or else returns extended user schema).
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            //SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
 
             // Build node for filtering.
             Node rootNode = buildNode(filter, schema);
@@ -342,18 +367,19 @@ public class UserResourceManager extends AbstractResourceManager {
                             excludeAttributes);
 
             // API user should pass a user manager to UserResourceEndpoint.
-            if (userManager != null) {
-                List<Object> tempList = userManager
-                        .listUsersWithGET(rootNode, startIndex, count, sortBy, sortOrder, domainName,
-                                requiredAttributes);
-                return processUserList(tempList, encoder, schema, attributes, excludeAttributes, startIndex);
-            } else {
+            //if (userManager != null) {
+            List<Object> tempList = userManager
+                    .listUsersWithGET(rootNode, startIndex, count, sortBy, sortOrder, domainName,
+                            requiredAttributes);
+            return processUserList(tempList, encoder, schema, attributes, excludeAttributes, startIndex);
+            /*} else {
                 String error = "Provided user manager handler is null.";
                 // Log the error as well.
                 // Throw internal server error.
                 throw new InternalErrorException(error);
             }
-        } catch (CharonException | NotFoundException | InternalErrorException | BadRequestException |
+             */
+        } catch (CharonException | NotFoundException | BadRequestException |
                 NotImplementedException e) {
             return AbstractResourceManager.encodeSCIMException(e);
         } catch (IOException e) {
@@ -474,7 +500,13 @@ public class UserResourceManager extends AbstractResourceManager {
             decoder = getDecoder();
 
             // unless configured returns core-user schema or else returns extended user schema)
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            //SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
             //create the search request object
             SearchRequest searchRequest = decoder.decodeSearchRequestBody(resourceString, schema);
 
@@ -505,39 +537,37 @@ public class UserResourceManager extends AbstractResourceManager {
             List<Object> returnedUsers;
             int totalResults = 0;
             //API user should pass a usermanager usermanager to UserResourceEndpoint.
-            if (userManager != null) {
-                List<Object> tempList = userManager.listUsersWithPost(searchRequest, requiredAttributes);
+            //if (userManager != null) {
+            List<Object> tempList = userManager.listUsersWithPost(searchRequest, requiredAttributes);
 
-                totalResults = (int) tempList.get(0);
-                tempList.remove(0);
+            totalResults = (int) tempList.get(0);
+            tempList.remove(0);
 
-                returnedUsers = tempList;
+            returnedUsers = tempList;
 
-                for (Object user : returnedUsers) {
-                    //perform service provider side validation.
-                    ServerSideValidator.validateRetrievedSCIMObjectInList((User) user, schema,
-                            searchRequest.getAttributesAsString(), searchRequest.getExcludedAttributesAsString());
-                }
-                //create a listed resource object out of the returned users list.
-                ListedResource listedResource = createListedResource(
-                        returnedUsers, searchRequest.getStartIndex(), totalResults);
-                //convert the listed resource into specific format.
-                String encodedListedResource = encoder.encodeSCIMObject(listedResource);
-                //if there are any http headers to be added in the response header.
-                Map<String, String> responseHeaders = new HashMap<String, String>();
-                responseHeaders.put(SCIMConstants.CONTENT_TYPE_HEADER, SCIMConstants.APPLICATION_JSON);
-                return new SCIMResponse(ResponseCodeConstants.CODE_OK, encodedListedResource, responseHeaders);
+            for (Object user : returnedUsers) {
+                //perform service provider side validation.
+                ServerSideValidator.validateRetrievedSCIMObjectInList((User) user, schema,
+                        searchRequest.getAttributesAsString(), searchRequest.getExcludedAttributesAsString());
+            }
+            //create a listed resource object out of the returned users list.
+            ListedResource listedResource = createListedResource(
+                    returnedUsers, searchRequest.getStartIndex(), totalResults);
+            //convert the listed resource into specific format.
+            String encodedListedResource = encoder.encodeSCIMObject(listedResource);
+            //if there are any http headers to be added in the response header.
+            Map<String, String> responseHeaders = new HashMap<String, String>();
+            responseHeaders.put(SCIMConstants.CONTENT_TYPE_HEADER, SCIMConstants.APPLICATION_JSON);
+            return new SCIMResponse(ResponseCodeConstants.CODE_OK, encodedListedResource, responseHeaders);
 
-            } else {
+            /*} else {
                 String error = "Provided user manager handler is null.";
                 //throw internal server error.
                 throw new InternalErrorException(error);
-            }
+            }*/
         } catch (CharonException e) {
             return AbstractResourceManager.encodeSCIMException(e);
         } catch (NotFoundException e) {
-            return AbstractResourceManager.encodeSCIMException(e);
-        } catch (InternalErrorException e) {
             return AbstractResourceManager.encodeSCIMException(e);
         } catch (BadRequestException e) {
             return AbstractResourceManager.encodeSCIMException(e);
@@ -567,7 +597,13 @@ public class UserResourceManager extends AbstractResourceManager {
             //obtain the json decoder.
             decoder = getDecoder();
 
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            //SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
 
             //get the URIs of required attributes which must be given a value
             Map<String, Boolean> requiredAttributes = ResourceManagerUtil.getOnlyRequiredAttributesURIs(
@@ -577,17 +613,18 @@ public class UserResourceManager extends AbstractResourceManager {
             //decode the SCIM User object, encoded in the submitted payload.
             User user = (User) decoder.decodeResource(scimObjectString, schema, new User());
             User updatedUser = null;
-            if (userManager != null) {
+            //if (userManager != null) {
                 //retrieve the old object
-                User oldUser = userManager.getUser(existingId, ResourceManagerUtil.getAllAttributeURIs(schema));
-                if (oldUser != null) {
-                    User validatedUser = (User) ServerSideValidator.validateUpdatedSCIMObject(oldUser, user, schema);
-                    updatedUser = userManager.updateUser(validatedUser, requiredAttributes);
+            User oldUser = userManager.getUser(existingId, ResourceManagerUtil.getAllAttributeURIs(schema));
+            if (oldUser != null) {
+                User validatedUser = (User) ServerSideValidator.validateUpdatedSCIMObject(oldUser, user, schema);
+                updatedUser = userManager.updateUser(validatedUser, requiredAttributes);
 
-                } else {
+            /*} else {
                     String error = "No user exists with the given id: " + existingId;
                     throw new NotFoundException(error);
                 }
+             */
 
             } else {
                 String error = "Provided user manager handler is null.";
@@ -651,7 +688,13 @@ public class UserResourceManager extends AbstractResourceManager {
             //decode the SCIM User object, encoded in the submitted payload.
             List<PatchOperation> opList = decoder.decodeRequest(scimObjectString);
 
-            SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            //SCIMResourceTypeSchema schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            SCIMResourceTypeSchema schema = null;
+            if (userManager.getTenant() != null) {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema(userManager.getTenant());
+            } else {
+                schema = SCIMResourceSchemaManager.getInstance().getUserResourceSchema();
+            }
             //get the user from the user core
             User oldUser = userManager.getUser(existingId, ResourceManagerUtil.getAllAttributeURIs(schema));
             if (oldUser == null) {

@@ -21,6 +21,7 @@ import org.wso2.charon3.core.config.SCIMUserSchemaExtensionBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
 * This is to check for extension schema for the user and buildTree a custom user schema with it.
@@ -69,6 +70,51 @@ public class SCIMResourceSchemaManager {
                     SCIMSchemaDefinitions.SCIMUserSchemaDefinition.ROLES,
                     SCIMSchemaDefinitions.SCIMUserSchemaDefinition.X509CERTIFICATES,
                     schemaExtension);
+        }
+        return SCIMSchemaDefinitions.SCIM_USER_SCHEMA;
+    }
+
+    /*
+     * Return the SCIM User Resource Schema For The Specific Tenant
+     *
+     * @return SCIMResourceTypeSchema
+     */
+    public SCIMResourceTypeSchema getUserResourceSchema(String tenantId) {
+
+        Map<String, AttributeSchema> schemaExtensionMap = SCIMUserSchemaExtensionBuilder.getInstance().
+                getExtensionSchema(tenantId);
+        if (schemaExtensionMap != null && !schemaExtensionMap.isEmpty()) {
+            SCIMResourceTypeSchema scimResourceTypeSchema = SCIMResourceTypeSchema.createSCIMResourceSchema(
+                    new ArrayList<String>(Arrays.asList(SCIMConstants.USER_CORE_SCHEMA_URI)),
+                    SCIMSchemaDefinitions.ID, SCIMSchemaDefinitions.EXTERNAL_ID, SCIMSchemaDefinitions.META,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.USERNAME,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.NAME,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.DISPLAY_NAME,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.NICK_NAME,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.PROFILE_URL,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.TITLE,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.USER_TYPE,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.PREFERRED_LANGUAGE,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.LOCALE,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.TIME_ZONE,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.ACTIVE,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.PASSWORD,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.EMAILS,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.PHONE_NUMBERS,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.IMS,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.PHOTOS,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.ADDRESSES,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.GROUPS,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.ENTITLEMENTS,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.ROLES,
+                    SCIMSchemaDefinitions.SCIMUserSchemaDefinition.X509CERTIFICATES);
+
+            schemaExtensionMap.keySet().forEach(schemaExtension -> {
+                scimResourceTypeSchema.getSchemasList().add(schemaExtension);
+                scimResourceTypeSchema.getAttributesList().add(schemaExtensionMap.get(schemaExtension));
+            });
+            scimResourceTypeSchema.setTenant(tenantId);
+            return scimResourceTypeSchema;
         }
         return SCIMSchemaDefinitions.SCIM_USER_SCHEMA;
     }
