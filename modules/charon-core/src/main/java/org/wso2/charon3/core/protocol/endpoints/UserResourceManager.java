@@ -158,16 +158,16 @@ public class UserResourceManager extends AbstractResourceManager {
                             CopyUtil.deepCopy(schema), attributes, excludeAttributes);
             User createdUser;
 
-            //if (userManager != null) {
+            if (userManager != null) {
             /*handover the SCIM User object to the user usermanager provided by the SP.
             need to send back the newly created user in the response payload*/
             createdUser = userManager.createUser(user, requiredAttributes);
-            /*} else {
+            } else {
                 String error = "Provided user manager handler is null.";
                 //throw internal server error.
                 throw new InternalErrorException(error);
             }
-            */
+
             //encode the newly created SCIM user object and add id attribute to Location header.
             String encodedUser;
             Map<String, String> responseHeaders = new HashMap<String, String>();
